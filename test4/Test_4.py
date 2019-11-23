@@ -31,7 +31,7 @@ def preprocess():
 
     file = open('G://Python//test1//News_Category_Dataset_v2.json', 'r', encoding='utf-8')
     headlines = []
-    cats = []
+    cate = []
 
     count = 0
     for line in file.readlines():
@@ -40,7 +40,7 @@ def preprocess():
             headline = headline2vec(dic['headline'], model)
 
             headlines.append(headline)
-            cats.append(dic['category'])
+            cate.append(dic['category'])
             count += 1
 
         except:
@@ -49,13 +49,13 @@ def preprocess():
         if count >= MAX_NEWS:
             break
 
-    category_list = list(set(cats))
+    category_list = list(set(cate))
     category_to_id = {category_list[i]: i for i in range(len(category_list))}
-    length = len(cats)
+    length = len(cate)
     targets = []
     for i in range(length):
         temp = np.zeros(shape=(41,))
-        temp[category_to_id[cats[i]]] = 1
+        temp[category_to_id[cate[i]]] = 1
         targets.append(temp)
 
     headlines = np.array(headlines)
@@ -64,9 +64,8 @@ def preprocess():
 
     X_train, X_test, y_train, y_test = train_test_split(headlines,
                                                         targets,
-                                                        test_size=0.2,
+                                                        test_size=0.1,
                                                         random_state=0)
-
     return X_train, X_test, y_train, y_test
 
 
@@ -77,9 +76,9 @@ if __name__ == '__main__':
     clf.add(layers.Dense(256, activation='relu', input_shape=(X_train.shape[1],)))
     clf.add(layers.Dense(256, activation='relu'))
     clf.add(layers.Dense(256, activation='relu'))
-    clf.add(layers.Dropout(rate=0.2))
+    clf.add(layers.Dropout(rate=0.1))
     clf.add(layers.Dense(256, activation='relu'))
-    clf.add(layers.Dropout(rate=0.2))
+    clf.add(layers.Dropout(rate=0.1))
     clf.add(layers.Dense(41))  
     clf.add(layers.Activation('softmax'))
     clf.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
